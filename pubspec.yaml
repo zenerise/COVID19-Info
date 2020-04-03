@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  expandable:
   dio:
   fancy_bottom_navigation:
   flutter:

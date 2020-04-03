@@ -8,7 +8,7 @@ class GlobalPage extends StatefulWidget {
 
 class _GlobalPageState extends State<GlobalPage> {
 
-   var _recovered, _deaths, _confirmed, _lastUpdate;
+  var _recovered, _deaths, _confirmed, _lastUpdate;
   var currentPos;
   var dio = Dio()..options.baseUrl = "https://covid19.mathdro.id/api";
 
@@ -29,11 +29,10 @@ class _GlobalPageState extends State<GlobalPage> {
       });
     } catch (err) {
       setState(() {
-        _deaths = err;
-        _recovered = err;
-        _confirmed = err;
+        _deaths = "Error , connection to server";
+        _recovered = "Error , connection to server";
+        _confirmed = "Error , connection to server";
       });
-      print(err);
     }
   }
 
@@ -46,7 +45,7 @@ class _GlobalPageState extends State<GlobalPage> {
             : status == "Deaths" ? data = _deaths : data = null;
 
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(6.5),
       child: Column(
         children: <Widget>[
           Text(

@@ -32,6 +32,23 @@ class _MyHomePageState extends State<MyHomePage> {
   
   var currentPos;
 
+  Widget body(){
+    // currentPos == 0 ? CountryPage() : currentPos == 1 ? GlobalPage() : currentPos == 2 ? DailyPage() : null
+    switch (currentPos) {
+      case 0:
+        return CountryPage();
+        break;
+      case 1:
+        return GlobalPage();
+        break;
+      case 2:
+        return DailyPage();
+        break;
+      default:
+        return GlobalPage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold,)),
         elevation: 13.5,
       ),
-      body: currentPos == 0 ? CountryPage() : currentPos == 1 ? GlobalPage() : currentPos == 2 ? DailyPage() : null,
+      body: body(),
       bottomNavigationBar: FancyBottomNavigation(
         activeIconColor: Colors.blue,
         barBackgroundColor: Colors.blue,
@@ -58,11 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
         tabs: [
           TabData(iconData: Icons.map, title: "Countries"),
           TabData(iconData: Icons.people, title: "Global"),
-          TabData(iconData: Icons.timer, title: "Daily")
+          TabData(iconData: Icons.timer, title: "Daily Data")
       ],
         onTabChangedListener: (position) {
          setState(() {
-         currentPos = position;
+          currentPos = position;
         });
       },
       ),
