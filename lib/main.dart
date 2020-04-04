@@ -2,7 +2,7 @@ import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:covid19info/global.dart';
 import 'package:covid19info/country.dart';
-import 'package:covid19info/daily.dart';
+import 'package:covid19info/daily/daily.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'COVID-19 Info'),
+      home: MyHomePage(title: 'COVID-19 Info.'),
     );
   }
 }
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: currentPos == 0 ? null : AppBar(
         actions: <Widget>[
           IconButton(
               icon: Icon(
@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         tabs: [
           TabData(iconData: Icons.map, title: "Countries"),
           TabData(iconData: Icons.people, title: "Global"),
-          TabData(iconData: Icons.timer, title: "Daily Data")
+          TabData(iconData: Icons.date_range, title: "Daily")
       ],
         onTabChangedListener: (position) {
          setState(() {

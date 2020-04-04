@@ -10,6 +10,12 @@ class CountryPage extends StatefulWidget {
 class _CountryPageState extends State<CountryPage> {
   var _countries;
   var dio = Dio()..options.baseUrl = "https://covid19.mathdro.id/api";
+  final TextEditingController _filter = new TextEditingController();
+  String _searchText = "";
+  List names = new List();
+  List filteredNames = new List();
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Countries');
 
   @override
   void initState() {
@@ -17,23 +23,67 @@ class _CountryPageState extends State<CountryPage> {
     initialization();
   }
 
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+          controller: _filter,
+          style: TextStyle(
+            color: Colors.white
+          ),
+          decoration: new InputDecoration(
+            enabledBorder: UnderlineInputBorder(      
+                      borderSide: BorderSide(color: Colors.white),   
+                      ),  
+              focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                   ),  
+            hintStyle: TextStyle(
+              color: Colors.white
+            ),
+            hintText: 'Example : Albania, Indonesia, ...',
+          ),
+          cursorColor: Colors.white,
+        );
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Country List');
+        filteredNames = names;
+        _filter.clear();
+      }
+    });
+  }
+
   void initialization() async {
     try {
       Response resp = await dio.get("/countries");
+      List tempList = new List();
       setState(() {
         _countries = resp.data;
+        for (int i = 0; i < _countries.length; i++) {
+          tempList.add(_countries['countries'][i]['name']);
+        }
+        names = tempList;
+        filteredNames = names;
       });
-    } catch (err) {}
+    } catch (err) {
+      print(err);
+    }
   }
 
   void getData(String countryName, int index) async {
     try {
       Response e = await dio.get("/countries/" + countryName);
-      setState(() {
-        _countries['countries'][index][countryName] = e.data;
-      });
+      if (mounted) {
+        setState(() {
+          _countries['countries'][index][countryName] = e.data;
+        });
+      }
     } catch (r) {
-      setState(() {});
+      setState(() {
+        _countries['countries'][index][countryName] = "Error No data : $r";
+      });
     }
   }
 
@@ -61,7 +111,11 @@ class _CountryPageState extends State<CountryPage> {
                         child: Text(
                           _countries['countries'][index]['name'],
                           style: TextStyle(
-                              fontSize: _countries['countries'][index]['name'].length >= 19 ? 18.5 : 22.5,
+                              fontSize: _countries['countries'][index]['name']
+                                          .length >=
+                                      19
+                                  ? 18.5
+                                  : 22.5,
                               color: Colors.white,
                               fontWeight: FontWeight.bold),
                         ),
@@ -117,15 +171,49 @@ class _CountryPageState extends State<CountryPage> {
           );
   }
 
+  Widget _buildBar(BuildContext context) {
+    return new AppBar(
+      centerTitle: true,
+      title: _appBarTitle,
+      leading: new IconButton(
+        icon: _searchIcon,
+        onPressed: _searchPressed,
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    if (_searchText.isNotEmpty) {
+      List tempList = new List();
+      for (int i = 0; i < filteredNames.length; i++) {
+        if (filteredNames[i]['name']
+            .toLowerCase()
+            .contains(_searchText.toLowerCase())) {
+          tempList.add(filteredNames[i]);
+        }
+      }
+      filteredNames = tempList;
+    }
+    return ListView.builder(
+      itemCount: _countries == null ? 0 : _countries['countries'].length,
+      itemBuilder: (BuildContext context, int index) {
+        return body(index);
+        // return new ListTile(
+        //   title: Text(filteredNames[index]['name']),
+        //   onTap: () => print(filteredNames[index]['name']),
+        // );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-          itemCount:
-              _countries == null ? 0 : _countries['countries'].length,
-          itemBuilder: (BuildContext context, int index) {
-            return body(index);
-          }),
+    return Scaffold(
+      appBar: _buildBar(context),
+      body: Container(
+        child: _buildList(),
+      ),
+      resizeToAvoidBottomPadding: false,
     );
   }
 }

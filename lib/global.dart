@@ -21,18 +21,22 @@ class _GlobalPageState extends State<GlobalPage> {
   void initialization() async {
     try {
       Response resp = await dio.get("/");
-      setState(() {
+      if (mounted){
+        setState(() {
         _confirmed = resp.data['confirmed']['value'];
         _recovered = resp.data['recovered']['value'];
         _deaths = resp.data['deaths']['value'];
         _lastUpdate = resp.data['lastUpdate'];
       });
+      }
     } catch (err) {
-      setState(() {
+      if (mounted){
+        setState(() {
         _deaths = "Error , connection to server";
         _recovered = "Error , connection to server";
         _confirmed = "Error , connection to server";
       });
+      }
     }
   }
 
