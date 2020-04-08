@@ -7,7 +7,6 @@ class GlobalPage extends StatefulWidget {
 }
 
 class _GlobalPageState extends State<GlobalPage> {
-
   var _recovered, _deaths, _confirmed, _lastUpdate;
   var currentPos;
   var dio = Dio()..options.baseUrl = "https://covid19.mathdro.id/api";
@@ -21,21 +20,21 @@ class _GlobalPageState extends State<GlobalPage> {
   void initialization() async {
     try {
       Response resp = await dio.get("/");
-      if (mounted){
+      if (mounted) {
         setState(() {
-        _confirmed = resp.data['confirmed']['value'];
-        _recovered = resp.data['recovered']['value'];
-        _deaths = resp.data['deaths']['value'];
-        _lastUpdate = resp.data['lastUpdate'];
-      });
+          _confirmed = resp.data['confirmed']['value'];
+          _recovered = resp.data['recovered']['value'];
+          _deaths = resp.data['deaths']['value'];
+          _lastUpdate = resp.data['lastUpdate'];
+        });
       }
     } catch (err) {
-      if (mounted){
+      if (mounted) {
         setState(() {
-        _deaths = "Error , connection to server";
-        _recovered = "Error , connection to server";
-        _confirmed = "Error , connection to server";
-      });
+          _deaths = "Error , connection to server";
+          _recovered = "Error , connection to server";
+          _confirmed = "Error , connection to server";
+        });
       }
     }
   }
@@ -53,11 +52,11 @@ class _GlobalPageState extends State<GlobalPage> {
       child: Column(
         children: <Widget>[
           Text(
-            '$status:',
+            '$status',
             style: TextStyle(color: Colors.white, fontSize: 17.5),
           ),
           Container(
-            height: 12,
+            height: 2.5,
           ),
           data == null
               ? CircularProgressIndicator(
@@ -83,17 +82,16 @@ class _GlobalPageState extends State<GlobalPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Center(
-          child: Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Container(
               child: Card(
-                elevation: 12.5,
-                color: Colors.blue,
+                  elevation: 12.5,
+                  color: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(17.5),
                   ),
@@ -102,27 +100,25 @@ class _GlobalPageState extends State<GlobalPage> {
                           backgroundColor: Colors.white,
                         )
                       : Column(
-                        children: <Widget>[
-                          Text(
-                            "Last Update",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22.5,
-                              fontWeight: FontWeight.w400
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(7.5),
-                            child: Text(
-                              _lastUpdate,
+                          children: <Widget>[
+                            Text(
+                              "Last Update",
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w900
-                                  ),
+                                  fontSize: 22.5,
+                                  fontWeight: FontWeight.w400),
                             ),
-                          )
-                        ],
-                      ))),
+                            Padding(
+                              padding: const EdgeInsets.all(7.5),
+                              child: Text(
+                                _lastUpdate,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                            )
+                          ],
+                        ))),
           Container(
               padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
               child: Card(
@@ -133,6 +129,7 @@ class _GlobalPageState extends State<GlobalPage> {
                   color: Colors.blue,
                   child: global())),
         ],
-      ));
+      ),
+    );
   }
 }

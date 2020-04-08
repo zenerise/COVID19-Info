@@ -1,17 +1,6 @@
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:covid19info/util/api.dart';
-import 'package:covid19info/daily/models/calendar.dart';
-import 'package:covid19info/daily/models/province.dart';
-import 'package:covid19info/daily/models/country.dart';
-// import 'package:covid19info/daily/views/result.dart';
-import 'package:covid19info/daily/views/province.dart';
-import 'package:covid19info/daily/views/country.dart';
-import 'package:covid19info/daily/views/calendar.dart';
-import 'package:covid19info/daily/controllers/country.dart';
-import 'package:covid19info/daily/controllers/province.dart';
-// import 'package:covid19info/daily/controllers/calendar.dart';
-
+import 'package:table_calendar/table_calendar.dart';
 
 class DailyPage extends StatefulWidget {
   @override
@@ -19,56 +8,224 @@ class DailyPage extends StatefulWidget {
 }
 
 class _DailyPageState extends State<DailyPage> {
+  List _countries;
+  String _countrySelected;
+  List _provincies;
+  // String _provinceSelected;
+  CalendarController _calendar;
+  var _date;
+  var _result;
   // var _confirmed, _recovered, _deaths;
-  var _date, year, month, day;
+  var _dio = Dio()..options.baseUrl = "https://covid19.mathdro.id/api";
 
+  @override
   void initState() {
     super.initState();
-    year = DateTime.now().toUtc().year;
-    month = DateTime.now().toUtc().month;
-    day = DateTime.now().toUtc().day - 1;
-    _date = day.toString() + "-" + month.toString() + "-" + year.toString();
+    _countries = new List();
+    _calendar = new CalendarController();
+    _date = DateTime.now();
     initialization();
   }
 
   @override
   void dispose() {
-    CalendarModel.calendar.dispose();
+    _calendar.dispose();
     super.dispose();
   }
 
   void initialization() async {
-      var daily = Covid19API().getData("/daily/" + _date);
-      var country = await Covid19API().getData("/countries");
-        // for (int i = 0; i < respDaily.data.length; i++) {
-        //   ProvinceController().addProvince(ProvinceModel.provinceList, respDaily.data[i]['provinceState']);
-        // print(ProvinceModel.provinceList);
-        // }
-        for (int i = 0; i < country['countries'].length; i++) {
-          CountryController().addCountry(CountryModel.countryList, country['countries'][i]['name']);
+    _dio.get("/countries").then((getCountries) {
+      if (mounted) {
+        for (int i = 0; i < getCountries.data['countries'].length; i++) {
+          setState(() {
+            _countries.add(getCountries.data['countries'][i]['name']);
+          });
         }
-        // print(country);
-        // print(CountryModel.countryList.map((v){
-        //   print("map: $v");
-        // }).toList());
-    
+      }
+    });
   }
-  
+
+  Widget loadingDisplay({@required String type, @required String text}) {
+    return Padding(
+      padding: const EdgeInsets.all(25.5),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            type == "Circular"
+                ? CircularProgressIndicator()
+                : LinearProgressIndicator(),
+            Text(
+              text,
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 22.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget calendarDisplay() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TableCalendar(
+        calendarController: _calendar,
+        calendarStyle: CalendarStyle(
+          highlightSelected: true,
+
+        ),
+        initialCalendarFormat: CalendarFormat.month,
+        onDaySelected: (selectedDay,_){
+          setState(() {
+            _date = (selectedDay.day-1).toString() + "-" + (selectedDay.month).toString() + "-" + (selectedDay.year).toString();
+          });
+        },
+      ),
+    );
+  }
+
+  Widget resultDisplay(BuildContext ctx, int i) {
+    return _countrySelected == null
+        ? Container(
+          height: MediaQuery.of(ctx).size.height * 25/100,
+          width: MediaQuery.of(ctx).size.width * 75/100,
+          child: Card(
+            elevation: 12,
+            color: Colors.blue,
+            child: Text("Dont for forget to Select Country & Date !"),
+        ),)
+        : Column(
+            children: <Widget>[
+              Text(_countrySelected),
+              Container(
+                      child: Card(
+                          elevation: 12.5,
+                          color: Colors.blue,
+                          child: Text(
+                            _provincies[i],
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ),
+            ],
+          );
+  }
+
+  Widget locationSelect() {
+    return _countries.isEmpty
+        ? loadingDisplay(text: "Loading", type: "Linear")
+        : Column(
+            children: <Widget>[
+              // Country DropDownButton
+              DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  iconEnabledColor: Colors.blue,
+                    hint: Center(
+                      child: Text(
+                        "Country",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                    value: _countrySelected,
+                    items: _countries
+                        .map((value) => DropdownMenuItem(
+                              child: Center(
+                                child: Text(
+                                  value,
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
+                              value: value,
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _countrySelected = value;
+                      });
+                      fetchCountryData();
+                    }),
+              ),
+              Padding(padding: EdgeInsets.all(2.5)),
+              // Province DropDownButton
+              // IgnorePointer(
+              //   ignoring: true,
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //         color: Colors.blue,
+              //         borderRadius: BorderRadius.all(Radius.circular(18.0))),
+              //     child: Card(
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(17.5),
+              //       ),
+              //       color: Colors.blue,
+              //       child: DropdownButtonHideUnderline(
+              //         child: DropdownButton(
+              //             iconEnabledColor: Colors.white,
+              //             iconDisabledColor: Colors.grey,
+              //             disabledHint: Text("Select Country First"),
+              //             hint: Text(
+              //               "Province",
+              //               style: TextStyle(color: Colors.white),
+              //             ),
+              //             value: _countrySelected,
+              //             items: _countries
+              //                 .map((value) => DropdownMenuItem(
+              //                       child: Text(
+              //                         value,
+              //                         style: TextStyle(color: Colors.white),
+              //                       ),
+              //                       value: value,
+              //                     ))
+              //                 .toList(),
+              //             onChanged: (value) {
+              //               setState(() {
+              //                 _countrySelected = value;
+              //               });
+              //             }),
+              //       ),
+              //     ),
+              //   ),
+              // )
+            ],
+          );
+  }
+
+  void fetchCountryData() async {
+    _dio.get("/daily" + _date).then((onValue){
+      setState(() {
+        _result = onValue.data;
+      });
+      print(_result[0][2]['countryRegion']);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: true,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            CalendarViews().display(),
-            // CountryViews().display(),
-            // ProvinceViews().display(),
-            // ResultViews().display(),
-          ],
-        ),
+      resizeToAvoidBottomPadding: false,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: calendarDisplay(),
+          ),
+          SliverToBoxAdapter(
+            child: locationSelect(),
+          ),
+          SliverGrid(
+            delegate: SliverChildBuilderDelegate((context, i ){
+              return resultDisplay(context,i);
+            }),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: _countrySelected == null ? 1 : 2
+            ),
+          )
+        ],
       ),
     );
   }

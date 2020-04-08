@@ -10,30 +10,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Covid-19 Info',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'COVID-19 Info.'),
+      home: Covid19Info(title: 'COVID-19 Info.'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class Covid19Info extends StatefulWidget {
+  Covid19Info({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _Covid19InfoState createState() => _Covid19InfoState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _Covid19InfoState extends State<Covid19Info> {
   
   var currentPos;
 
-  Widget body(){
-    // currentPos == 0 ? CountryPage() : currentPos == 1 ? GlobalPage() : currentPos == 2 ? DailyPage() : null
+  Widget body(BuildContext ctx){
     switch (currentPos) {
       case 0:
         return CountryPage();
@@ -48,10 +48,35 @@ class _MyHomePageState extends State<MyHomePage> {
         return GlobalPage();
     }
   }
+  
+  Widget bottomNavBar(){
+    return Padding(
+        padding: const EdgeInsets.only(top: 15.5),
+        child: FancyBottomNavigation(
+          activeIconColor: Colors.blue,
+          barBackgroundColor: Colors.blue,
+          circleColor: Colors.white,
+          inactiveIconColor: Colors.white,
+          textColor: Colors.white,
+          initialSelection: 1,
+          tabs: [
+            TabData(iconData: Icons.map, title: "Countries"),
+            TabData(iconData: Icons.people, title: "Global"),
+            TabData(iconData: Icons.date_range, title: "Daily")
+        ],
+          onTabChangedListener: (position) {
+           setState(() {
+            currentPos = position;
+          });
+        },
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: currentPos == 0 ? null : AppBar(
         actions: <Widget>[
           IconButton(
@@ -64,25 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold,)),
         elevation: 13.5,
       ),
-      body: body(),
-      bottomNavigationBar: FancyBottomNavigation(
-        activeIconColor: Colors.blue,
-        barBackgroundColor: Colors.blue,
-        circleColor: Colors.white,
-        inactiveIconColor: Colors.white,
-        textColor: Colors.white,
-        initialSelection: 1,
-        tabs: [
-          TabData(iconData: Icons.map, title: "Countries"),
-          TabData(iconData: Icons.people, title: "Global"),
-          TabData(iconData: Icons.date_range, title: "Daily")
-      ],
-        onTabChangedListener: (position) {
-         setState(() {
-          currentPos = position;
-        });
-      },
-      ),
+      body: body(context),
+      bottomNavigationBar: bottomNavBar()
     );
   }
 }
