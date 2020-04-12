@@ -1,10 +1,14 @@
-import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
+import 'package:covid19info/about.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:covid19info/global.dart';
 import 'package:covid19info/country.dart';
-import 'package:covid19info/daily/daily.dart';
+// import 'package:covid19info/daily.dart';
+import 'package:covid19info/userlocation.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -12,9 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Covid-19 Info',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(canvasColor: Colors.transparent),
       home: Covid19Info(title: 'COVID-19 Info.'),
     );
   }
@@ -30,10 +32,9 @@ class Covid19Info extends StatefulWidget {
 }
 
 class _Covid19InfoState extends State<Covid19Info> {
-  
   var currentPos;
 
-  Widget body(BuildContext ctx){
+  Widget body() {
     switch (currentPos) {
       case 0:
         return CountryPage();
@@ -42,55 +43,75 @@ class _Covid19InfoState extends State<Covid19Info> {
         return GlobalPage();
         break;
       case 2:
-        return DailyPage();
+        return UserLocation();
         break;
       default:
         return GlobalPage();
     }
   }
-  
-  Widget bottomNavBar(){
-    return Padding(
-        padding: const EdgeInsets.only(top: 15.5),
-        child: FancyBottomNavigation(
-          activeIconColor: Colors.blue,
-          barBackgroundColor: Colors.blue,
-          circleColor: Colors.white,
-          inactiveIconColor: Colors.white,
-          textColor: Colors.white,
-          initialSelection: 1,
-          tabs: [
-            TabData(iconData: Icons.map, title: "Countries"),
-            TabData(iconData: Icons.people, title: "Global"),
-            TabData(iconData: Icons.date_range, title: "Daily")
-        ],
-          onTabChangedListener: (position) {
-           setState(() {
-            currentPos = position;
-          });
-        },
+
+  Widget bottomNavBar() {
+    return CurvedNavigationBar(
+      // activeIconColor: Colors.blue,
+      // buttonBackgroundColor: Colors.blue,
+      color: Colors.blue,
+      index: 1,
+      backgroundColor: Colors.transparent,
+      // circleColor: Colors.white,
+      // inactiveIconColor: Colors.white,
+      // textColor: Colors.white,
+      // initialSelection: 1,
+      height: 52.5,
+      items: <Widget>[
+        Icon(
+          Icons.map,
+          color: Colors.white,
         ),
-      );
+        Icon(
+          Icons.language,
+          color: Colors.white,
+        ),
+        Icon(Icons.my_location, color: Colors.white)
+      ],
+      onTap: (position) {
+        setState(() {
+          currentPos = position;
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: currentPos == 0 ? null : AppBar(
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(
-                Icons.info,
-                color: Colors.white,
+        extendBody: true,
+        backgroundColor: Colors.white,
+        appBar: currentPos == 0
+            ? null
+            : PreferredSize(
+                preferredSize: Size.fromHeight(
+                    MediaQuery.of(context).size.height * 8.5 / 100),
+                child: AppBar(
+                  centerTitle: true,
+                  actions: <Widget>[
+                    IconButton(
+                        icon: Icon(
+                          Icons.info,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AboutPage()))),
+                  ],
+                  title: Text(widget.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                  elevation: 13.5,
+                ),
               ),
-              onPressed: null),
-        ],
-        title: Text(widget.title, style: TextStyle(fontWeight: FontWeight.bold,)),
-        elevation: 13.5,
-      ),
-      body: body(context),
-      bottomNavigationBar: bottomNavBar()
-    );
+        body: body(),
+        bottomNavigationBar: bottomNavBar());
   }
 }

@@ -75,12 +75,15 @@ class _DailyPageState extends State<DailyPage> {
         calendarController: _calendar,
         calendarStyle: CalendarStyle(
           highlightSelected: true,
-
         ),
         initialCalendarFormat: CalendarFormat.month,
-        onDaySelected: (selectedDay,_){
+        onDaySelected: (selectedDay, _) {
           setState(() {
-            _date = (selectedDay.day-1).toString() + "-" + (selectedDay.month).toString() + "-" + (selectedDay.year).toString();
+            _date = (selectedDay.day - 1).toString() +
+                "-" +
+                (selectedDay.month).toString() +
+                "-" +
+                (selectedDay.year).toString();
           });
         },
       ),
@@ -90,28 +93,29 @@ class _DailyPageState extends State<DailyPage> {
   Widget resultDisplay(BuildContext ctx, int i) {
     return _countrySelected == null
         ? Container(
-          height: MediaQuery.of(ctx).size.height * 25/100,
-          width: MediaQuery.of(ctx).size.width * 75/100,
-          child: Card(
-            elevation: 12,
-            color: Colors.blue,
-            child: Text("Dont for forget to Select Country & Date !"),
-        ),)
+            height: MediaQuery.of(ctx).size.height * 25 / 100,
+            width: MediaQuery.of(ctx).size.width * 75 / 100,
+            child: Card(
+              elevation: 12,
+              color: Colors.blue,
+              child: Text("Dont for forget to Select Country & Date !"),
+            ),
+          )
         : Column(
             children: <Widget>[
               Text(_countrySelected),
               Container(
-                      child: Card(
-                          elevation: 12.5,
-                          color: Colors.blue,
-                          child: Text(
-                            _provincies[i],
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ),
+                child: Card(
+                    elevation: 12.5,
+                    color: Colors.blue,
+                    child: Text(
+                      _countrySelected,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    )),
+              ),
             ],
           );
   }
@@ -124,7 +128,7 @@ class _DailyPageState extends State<DailyPage> {
               // Country DropDownButton
               DropdownButtonHideUnderline(
                 child: DropdownButton(
-                  iconEnabledColor: Colors.blue,
+                    iconEnabledColor: Colors.blue,
                     hint: Center(
                       child: Text(
                         "Country",
@@ -196,8 +200,18 @@ class _DailyPageState extends State<DailyPage> {
           );
   }
 
+  String parseDate(DateTime dateSelected) {
+    var out = dateSelected.day.toString() +
+        "-" +
+        dateSelected.month.toString() +
+        "-" +
+        dateSelected.year.toString();
+    return out;
+  }
+
   void fetchCountryData() async {
-    _dio.get("/daily" + _date).then((onValue){
+    _date = parseDate(_date);
+    _dio.get("/daily" + _date).then((onValue) {
       setState(() {
         _result = onValue.data;
       });
@@ -207,26 +221,26 @@ class _DailyPageState extends State<DailyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: calendarDisplay(),
-          ),
-          SliverToBoxAdapter(
-            child: locationSelect(),
-          ),
-          SliverGrid(
-            delegate: SliverChildBuilderDelegate((context, i ){
-              return resultDisplay(context,i);
-            }),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: _countrySelected == null ? 1 : 2
-            ),
-          )
-        ],
-      ),
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: calendarDisplay(),
+        ),
+        SliverToBoxAdapter(
+          child: locationSelect(),
+        ),
+        _countrySelected == null
+            ? SliverToBoxAdapter(
+                child: CircularProgressIndicator(),
+              )
+            : SliverGrid(
+                delegate: SliverChildBuilderDelegate((context, i) {
+                  return resultDisplay(context, i);
+                }),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: _countrySelected == null ? 1 : 1),
+              )
+      ],
     );
   }
 }

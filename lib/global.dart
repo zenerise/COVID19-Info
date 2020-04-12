@@ -75,6 +75,16 @@ class _GlobalPageState extends State<GlobalPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Cases Outside China",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.5,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
         getGlobal("Confirmed"),
         getGlobal("Recovered"),
         getGlobal("Deaths"),
@@ -86,39 +96,44 @@ class _GlobalPageState extends State<GlobalPage> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Container(
-              child: Card(
-                  elevation: 12.5,
-                  color: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.5),
-                  ),
-                  child: _lastUpdate == null
-                      ? CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        )
-                      : Column(
-                          children: <Widget>[
-                            Text(
-                              "Last Update",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.5,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(7.5),
-                              child: Text(
-                                _lastUpdate,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900),
-                              ),
-                            )
-                          ],
-                        ))),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50.0, 18.5, 50.0, 18.5),
+            child: Container(
+                child: Card(
+                    elevation: 12.5,
+                    color: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17.5),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          "Last Update",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22.5,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        _lastUpdate == null
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: LinearProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(7.5),
+                                child: Text(
+                                  _lastUpdate,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              )
+                      ],
+                    ))),
+          ),
           Container(
               padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
               child: Card(

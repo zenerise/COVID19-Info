@@ -18,9 +18,10 @@ environment:
 
 dependencies:
   table_calendar:
+  geolocator:
   expandable:
   dio:
-  fancy_bottom_navigation:
+  curved_navigation_bar:
   flutter:
     sdk: flutter
 
