@@ -79,7 +79,7 @@ class _UserLocationState extends State<UserLocation> {
           ),
           userCountry == null
               ? Padding(
-                  padding: const EdgeInsets.fromLTRB(75.0, 2.0, 75.0, 2.0),
+                  padding: const EdgeInsets.fromLTRB(112.5, 8.0, 112.5, 8.0),
                   child: LinearProgressIndicator(backgroundColor: Colors.white),
                 )
               : Text(userCountry,

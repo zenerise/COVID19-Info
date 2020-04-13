@@ -96,46 +96,50 @@ class _GlobalPageState extends State<GlobalPage> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(50.0, 18.5, 50.0, 18.5),
+            padding: const EdgeInsets.fromLTRB(25.0, 18.5, 25.0, 18.5),
             child: Container(
-                child: Card(
-                    elevation: 12.5,
-                    color: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17.5),
+              width: MediaQuery.of(context).size.width * 50 / 100,
+              child: Card(
+                elevation: 12.5,
+                color: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(17.5),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      "Last Update",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22.5,
+                          fontWeight: FontWeight.bold),
                     ),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          "Last Update",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22.5,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        _lastUpdate == null
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: LinearProgressIndicator(
-                                  backgroundColor: Colors.white,
-                                ),
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.all(7.5),
-                                child: Text(
-                                  _lastUpdate,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              )
-                      ],
-                    ))),
+                    _lastUpdate == null
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LinearProgressIndicator(
+                              backgroundColor: Colors.white,
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(7.5),
+                            child: Text(
+                              _lastUpdate,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          )
+                  ],
+                ),
+              ),
+            ),
           ),
           Container(
-              padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
+              padding: EdgeInsets.fromLTRB(57, 0, 57, 0),
               child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(32.5),

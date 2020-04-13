@@ -61,7 +61,7 @@ class _Covid19InfoState extends State<Covid19Info> {
       // inactiveIconColor: Colors.white,
       // textColor: Colors.white,
       // initialSelection: 1,
-      height: 52.5,
+      height: 62.5,
       items: <Widget>[
         Icon(
           Icons.map,
